@@ -64,25 +64,27 @@ void XPT2046_Init ( void )
 	
 
   /* 开启GPIO时钟 */
-  RCC_APB2PeriphClockCmd ( XPT2046_SPI_GPIO_CLK|XPT2046_PENIRQ_GPIO_CLK, ENABLE );
-
+  RCC_AHB1PeriphClockCmd ( XPT2046_SPI_GPIO_CLK|XPT2046_PENIRQ_GPIO_CLK, ENABLE );
+  
   /* 模拟SPI GPIO初始化 */          
   GPIO_InitStructure.GPIO_Pin=XPT2046_SPI_CLK_PIN;
-  GPIO_InitStructure.GPIO_Speed=GPIO_Speed_10MHz ;	  
-  GPIO_InitStructure.GPIO_Mode=GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed=GPIO_Speed_25MHz ;	  
+  GPIO_InitStructure.GPIO_Mode=GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;
   GPIO_Init(XPT2046_SPI_CLK_PORT, &GPIO_InitStructure);
 
   GPIO_InitStructure.GPIO_Pin = XPT2046_SPI_MOSI_PIN;
   GPIO_Init(XPT2046_SPI_MOSI_PORT, &GPIO_InitStructure);
 
   GPIO_InitStructure.GPIO_Pin = XPT2046_SPI_MISO_PIN; 
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz ;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;      
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz ;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;      
   GPIO_Init(XPT2046_SPI_MISO_PORT, &GPIO_InitStructure);
 
   GPIO_InitStructure.GPIO_Pin = XPT2046_SPI_CS_PIN; 
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz ;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;      
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz ;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; 
+	GPIO_InitStructure.GPIO_OType=GPIO_OType_PP;	
   GPIO_Init(XPT2046_SPI_CS_PORT, &GPIO_InitStructure); 
    
   /* 拉低片选，选择XPT2046 */
@@ -90,7 +92,8 @@ void XPT2046_Init ( void )
 								
 	//触摸屏触摸信号指示引脚，不使用中断
   GPIO_InitStructure.GPIO_Pin = XPT2046_PENIRQ_GPIO_PIN;       
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	 // 上拉输入
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;	 // 上拉输入
+	GPIO_InitStructure.GPIO_PuPd=GPIO_PuPd_UP;	
   GPIO_Init(XPT2046_PENIRQ_GPIO_PORT, &GPIO_InitStructure);
 
 		
@@ -110,7 +113,7 @@ static void XPT2046_DelayUS ( __IO uint32_t ulCount )
 
 	for ( i = 0; i < ulCount; i ++ )
 	{
-		uint8_t uc = 12;     //设置值为12，大约延1微秒  
+		uint8_t uc = 12;     //设置值为6，大约延1微秒  
 	      
 		while ( uc -- );     //延1微秒	
 
